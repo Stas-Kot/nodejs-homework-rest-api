@@ -1,6 +1,3 @@
-// const fs = require('fs/promises')
-// const contacts = require('./contacts.json')
-
 const listContacts = require('./listContacts')
 
 const getContactById = require('./getContactById')
