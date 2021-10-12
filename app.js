@@ -2,11 +2,11 @@ const express = require('express')
 const logger = require('morgan')
 const cors = require('cors')
 const mongoose = require('mongoose')
-const dotenv = require('dotenv')
-dotenv.config()
+require('dotenv').config()
+
+const { Contact } = require('./models')
 
 const { DB_HOST } = process.env
-console.log(DB_HOST)
 
 mongoose
   .connect(DB_HOST, {
