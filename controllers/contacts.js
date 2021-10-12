@@ -1,15 +1,16 @@
 const { NotFound } = require('http-errors')
 
 const { sendSuccessRes } = require('../utils')
-const contactsOperations = require('../model/contacts')
+const { Contact } = require('../models')
 
 const getAll = async (req, res) => {
-  const contacts = await contactsOperations.listContacts()
+  const contacts = await Contact.find({}, '_id name email phone favorite')
   sendSuccessRes(res, { contacts })
 }
 
 const getById = async (req, res) => {
-  const result = await contactsOperations.getContactById(req.params.contactId)
+  const id = req.params.contactId
+  const result = await Contact.findById(id, '_id name email phone favorite')
   if (!result) {
     throw new NotFound(`Contact with id:${req.params.contactId} not found`)
   }
@@ -17,12 +18,13 @@ const getById = async (req, res) => {
 }
 
 const add = async (req, res) => {
-  const result = await contactsOperations.addContact(req.body)
+  const result = await Contact.create(req.body)
   sendSuccessRes(res, { result }, 201)
 }
 
 const removeById = async (req, res) => {
-  const result = await contactsOperations.removeContact(req.params.contactId)
+  const id = req.params.contactId
+  const result = await Contact.findByIdAndDelete(id)
   if (!result) {
     throw new NotFound(`Contact with id:${req.params.contactId} not found`)
   }
@@ -30,12 +32,24 @@ const removeById = async (req, res) => {
 }
 
 const updateById = async (req, res) => {
-  const result = await contactsOperations.updateContact(
-    req.params.contactId,
-    req.body,
+  const id = req.params.contactId
+  const result = await Contact.findByIdAndUpdate(id, req.body, { new: true })
+  if (!result) {
+    throw new NotFound(`Contact with id:${id} not found`)
+  }
+  sendSuccessRes(res, { result })
+}
+
+const updateStatusContact = async (req, res) => {
+  const id = req.params.contactId
+  const { favorite } = req.body
+  const result = await Contact.findByIdAndUpdate(
+    id,
+    { favorite },
+    { new: true },
   )
   if (!result) {
-    throw new NotFound(`Contact with id:${req.params.contactId} not found`)
+    throw new NotFound(`Contact with id:${id} not found`)
   }
   sendSuccessRes(res, { result })
 }
@@ -46,4 +60,5 @@ module.exports = {
   add,
   removeById,
   updateById,
+  updateStatusContact,
 }
