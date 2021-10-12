@@ -3,23 +3,20 @@ const logger = require('morgan')
 const cors = require('cors')
 const mongoose = require('mongoose')
 
-// Crock
-// HCHUiAJq2E4Qwdgv
-const DB_HOST =
-  'mongodb+srv://Crock:HCHUiAJq2E4Qwdgv@cluster0.ogon4.mongodb.net/db-contacts?retryWrites=true&w=majority'
+console.log(process.env.DB_HOST)
 
-mongoose
-  .connect(DB_HOST, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log('Database connection successful')
-  })
-  .catch((error) => {
-    console.log(error.message)
-    process.exit(1)
-  })
+// mongoose
+//   .connect(DB_HOST, {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   })
+//   .then(() => {
+//     console.log('Database connection successful')
+//   })
+//   .catch((error) => {
+//     console.log(error.message)
+//     process.exit(1)
+//   })
 
 const contactsRouter = require('./routes/api/contacts')
 
