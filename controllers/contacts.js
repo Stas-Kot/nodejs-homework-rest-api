@@ -3,22 +3,30 @@ const { NotFound } = require('http-errors')
 const { sendSuccessRes } = require('../utils')
 const { Contact } = require('../models')
 
-const getAll = async (req, res) => {
-  const contacts = await Contact.find({}, '_id name email phone favorite')
+const getAllByUser = async (req, res) => {
+  const { _id } = req.user
+  const contacts = await Contact.find(
+    { owner: _id },
+    '_id name email phone favorite owner',
+  )
   sendSuccessRes(res, { contacts })
 }
 
 const getById = async (req, res) => {
   const id = req.params.contactId
-  const result = await Contact.findById(id, '_id name email phone favorite')
+  const result = await Contact.findById(
+    id,
+    '_id name email phone favorite owner',
+  )
   if (!result) {
-    throw new NotFound(`Contact with id:${req.params.contactId} not found`)
+    throw new NotFound(`Contact with id:${id} not found`)
   }
   sendSuccessRes(res, { result })
 }
 
 const add = async (req, res) => {
-  const result = await Contact.create(req.body)
+  const newContact = { ...req.body, owner: req.user._id }
+  const result = await Contact.create(newContact)
   sendSuccessRes(res, { result }, 201)
 }
 
@@ -26,7 +34,12 @@ const removeById = async (req, res) => {
   const id = req.params.contactId
   const result = await Contact.findByIdAndDelete(id)
   if (!result) {
-    throw new NotFound(`Contact with id:${req.params.contactId} not found`)
+    res.status(404).json({
+      status: 'error',
+      code: 404,
+      message: `Contact with id:${req.params.contactId} not found`,
+    })
+    return
   }
   sendSuccessRes(res, { message: 'Contact deleted' })
 }
@@ -55,7 +68,7 @@ const updateStatusContact = async (req, res) => {
 }
 
 module.exports = {
-  getAll,
+  getAllByUser,
   getById,
   add,
   removeById,
