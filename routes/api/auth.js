@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 
-const { userJoiSchema } = require('../../models/user')
+const { userJoiSchema, verifyMailJoiSchema } = require('../../models/user')
 const {
   controllerWrapper,
   validation,
@@ -14,6 +14,12 @@ router.post(
   '/signup',
   validation(userJoiSchema),
   controllerWrapper(ctrl.signup),
+)
+router.get('/verify/:verifyToken', controllerWrapper(ctrl.verifyToken))
+router.post(
+  '/verify',
+  validation(verifyMailJoiSchema),
+  controllerWrapper(ctrl.verify),
 )
 router.post('/login', validation(userJoiSchema), controllerWrapper(ctrl.login))
 router.post('/logout', authentication, controllerWrapper(ctrl.logout))
